@@ -1397,6 +1397,7 @@ class JmessageFlutter {
     List<JMConversationInfo> conversations = conversionJsons
         .map((json) => JMConversationInfo.fromJson(json))
         .toList();
+    conversations.retainWhere((element) => element.target != null);
     return conversations;
   }
 
@@ -2516,14 +2517,16 @@ class JMConversationInfo {
         break;
       case JMConversationType.group:
         target = JMGroupInfo.fromJson(json['target']);
+        if (target.owner == '') target = null;
+
         break;
       case JMConversationType.chatRoom:
         target = JMChatRoomInfo.fromJson(json['target']);
         break;
     }
-
-    latestMessage =
-        JMNormalMessage.generateMessageFromJson(json['latestMessage']);
+    if (target != null)
+      latestMessage =
+          JMNormalMessage.generateMessageFromJson(json['latestMessage']);
   }
 
   bool isMyMessage(dynamic message) {
